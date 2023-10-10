@@ -15,9 +15,9 @@ spec:
             command: ["/bin/sh", "-c", "cat /app/check_status.sh | /bin/sh"]
             volumeMounts: 
             - mountPath: /app
-              name: hc_volume
+              name: hcvolume
           volumes: 
-          - name: hc_volume 
+          - name: hcvolume 
             configMap:
               name: caas-configmap
               items:
