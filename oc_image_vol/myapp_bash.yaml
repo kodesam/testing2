@@ -8,18 +8,18 @@ spec:
     spec:
       template:
         spec:
-          serviceAccountName: myserviceaccountvol
+          serviceAccountName: ocsa
           containers:
           - name: myapp
             image: openshift/ose-cli:4.12
             command: ["./check_status.sh"]
             volumeMounts: 
-            - mountPath: /app/check_status.sh
+            - mountPath: /check_status.sh
               name: myvolume
           volumes: 
           - name: myvolume 
             hostPath:
-              path: /home/student/myapp/mygit/testing/oc_image_vol/check_status.sh
+              path: /var/home/core/check_status.sh
               type: File
           restartPolicy: OnFailure
 ---
@@ -48,9 +48,9 @@ spec:
 #   namespace: default
 # ---
 
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: myserviceaccountvol
-spec:
-  serviceAccountName: myserviceaccountvol
+#apiVersion: v1
+#kind: ServiceAccount
+#metadata:
+ # name: myserviceaccountvol
+#spec:
+ # serviceAccountName: myserviceaccountvol
