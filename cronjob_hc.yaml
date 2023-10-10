@@ -1,25 +1,25 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: mycronjob
+  name: caas-cronjob
 spec:
   schedule: "*/1 * * * *"
   jobTemplate:
     spec:
       template:
         spec:
-          serviceAccountName: ocsa
+          serviceAccountName: caas-ops
           containers:
-          - name: myapp
+          - name: caas-hc-pod
             image: quay.io/openshift/origin-cli
             command: ["/bin/sh", "-c", "cat /app/check_status.sh | /bin/sh"]
             volumeMounts: 
             - mountPath: /app
-              name: myvolume
+              name: hc_volume
           volumes: 
-          - name: myvolume 
+          - name: hc_volume 
             configMap:
-              name: myconfigmap
+              name: caas-configmap
               items:
               - key: check_status.sh
                 path: check_status.sh
@@ -50,38 +50,29 @@ spec:
 #   namespace: default
 # ---
 
-#apiVersion: v1
-#kind: ServiceAccount
-#metadata:
-#  name: myserviceaccount
-#spec:
-#  serviceAccountName: myserviceaccount
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: caas-sa
+spec:
+  serviceAccountName: caas-ops
 
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: myconfigmap
+  name: caas-configmap
 data:
   check_status.sh: |
     #!/bin/sh
 
-          #output_log="status_check_output.log"
-    #error_log="status_check_error.log"
+    echo "################# oc get nodes  ####################################"
+    oc get node
 
-    # Command 1
-    # get_nodes=$(oc get nodes)
-    echo "Running Command 1: get_nodes"
-    oc get node #>> "$output_log"
+    echo "################# oc get custom operator ###########################" 
+    oc get co 
 
-    # Command 2
-    # get_co=$(oc get co)
-    echo "Running Command 2: get_co" 
-    oc get co #>> "$output_log"
+    echo "################# oc get evicted POD ###############################" 
+    oc get pod -A | egrep -v 'Running|Completed'
 
-    # Command 3
-    # get_pods=$(oc get pods -A | egrep -v 'Running|Completed')
-    echo "Running Command 3: get_pods"
-    oc get pod -A | egrep -v 'Running|Completed' #>> "$output_log" 
 
-    #echo "Commands executed. Output saved to '$output_log'"
 
